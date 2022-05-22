@@ -1,0 +1,24 @@
+html, body {
+    font-family: 'Libre Baskerville', serif;
+    background-image: url(https://img.freepik.com/free-vector/clean-medical-background_53876-116875.jpg?w=2000);
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+h4, h5, h6 {
+    font-family: 'Libre Baskerville', serif;
+    margin: 2%;
+}
+
+.rounded-pill {
+    color: brown;
+}
+
+#errores{
+	/*text-align:center;*/
+	margin:auto;
+	color: red;
+	/*padding-top:10px;*/
+
+
+}
