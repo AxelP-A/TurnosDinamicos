@@ -1,3 +1,4 @@
+// Clase para la creación de cada institución como variable
 class Clinica {
 	constructor(nombre, cantidadPersonas, tiempoEspera, idPersonas, idTiempoEspera) {
 		this.nombre = nombre;
@@ -8,6 +9,26 @@ class Clinica {
 	}
 }
 
+document.getElementById("mailsProfesionales").style.display = "none";
+
+
+
+
+
+
+function eliminarNodo(elementoEliminar) {
+
+	console.log(elementoEliminar);
+	let nodoEliminar = document.getElementById(elementoEliminar);
+	nodoEliminar.parentNode.removeChild(nodoEliminar);
+	}
+
+
+
+
+
+
+// Con las siguientes declaraciones luego se arma un array donde se acumularán los pacientes
 const clinicaDelSol = new Clinica("Clínica del Sol", 0, 0, "#clinica-del-sol-personas", "#clinica-del-sol-tiempo");
 const clinicaPrivada = new Clinica("Clínica Privada", 0, 0, "#clinica-privada-personas", "#clinica-privada-tiempo");
 const sanatorioCentral = new Clinica("Sanatorio Central", 0, 0, "#sanatorio-central-personas", "#sanatorio-central-tiempo");
@@ -33,8 +54,10 @@ function actualizarSede() {
 function eliminarTurno(pacienteSede) {
 	for (i = 0; i <= sedes.length - 1; i++) {
 		if (pacienteSede == sedes[i].nombre) {
+			if (sedes[i].cantidadPersonas > 0){
 			sedes[i].cantidadPersonas--;
 			sedes[i].tiempoEspera -= 10;
+		}
 			document.querySelector(sedes[i].idPersonas).textContent = sedes[i].cantidadPersonas;
 			mostrarEspera(sedes[i].tiempoEspera, sedes[i].idTiempoEspera);
 			break;
@@ -42,6 +65,7 @@ function eliminarTurno(pacienteSede) {
 	}
 }
 
+// USO DE EXPRESIONES REGULARES PARA VALIDACIÓN DE DATOS
 function validacionNombre(texto) {
 	const nombreYapellido = /^[\w'\-,.][^0-9_!¡?÷?¿\\\+=@#$%ˆ&*(){}|~<>;:[\]]{2,}$/.exec(texto);
 	const comprobarTexto = !!nombreYapellido;
@@ -75,11 +99,6 @@ function mostrarEspera(tiempo, idTiempo) {
 	}
 }
 
-/*const disponibilidad = [
-	...centros,
-	...cantidadPacientes,
-];*/
-
 class Paciente {
 	constructor(nombre, dniCred, sede) {
 		this.nombre = nombre;
@@ -94,13 +113,17 @@ class DOM {
 		const turnoAsignado = document.getElementById("turno-asig");
 		const elemento = document.createElement("div");
 		elemento.innerHTML = ` 
-        <div class ="card text-center mb-4">
+        <div class ="card text-center mb-4" name="tarjetaDelCulo" id="${id}-div">
             <div class="card-body">
                 <strong>Nombre</strong>: ${Paciente.nombre}
                 <strong>DNI/Credencial</strong>: ${Paciente.dniCred}
-                <a href="#" class="btn btn-danger botonBorrar" type="click" name="del" id="'.${id}.'">Borrar Paciente</a>
+				<strong>Sede</strong>: ${Paciente.sede}
+                <a href="#" class="btn btn-secondary botonBorrar" type="click" name="del" id="${id}">Borrar Paciente</a>
             </div>
         </div>`;
+		console.log(id);
+		console.log({id});
+		console.log(document.getElementsByName("tarjetaDelCulo"));
 		turnoAsignado.appendChild(elemento);
 		this.resetForm();
 	}
@@ -111,7 +134,7 @@ class DOM {
 			duration: 3000,
 			position: "center",
 			style: {
-				background: "linear-gradient(to right, #00b09b, #96c93d)"
+				background: "#56cc9d"
 			}
 		}).showToast();
 	}
@@ -122,13 +145,15 @@ class DOM {
 
 	borrarPaciente(element, Paciente, id) {
 		let quitarTurnoSede;
-		console.log(id);
-		console.log(Paciente);
+		// console.log(id);
+		// console.log(Paciente);
 		console.log(element);
-		/*element.parentElement.parentElement.remove();*/ /* NECESIDAD DE ID PARA EVITAR TOCAR TODOS LOS BOTONES. */
-		/*let elemento = document.getElementById(id);
-		elemento.parentNode.removeChild(elemento);*/
-		document.getElementById(id).parentElement.parentElement.remove();
+		/* NECESITO DE UN ID DINÁMICO PARA EVITAR ACTIVAR TODOS LOS BOTONES Y BORRAR TODOS LOS ELEMENTOS. */
+		
+		/*document.getElementById(id).parentElement.parentElement.remove();
+		quitarTurnoSede = Paciente.sede;*/
+
+		eliminarNodo(id);
 		quitarTurnoSede = Paciente.sede;
 		eliminarTurno(quitarTurnoSede);
 	}
@@ -137,7 +162,7 @@ class DOM {
 let idBotonEliminar = 0;
 
 document.getElementById("turnero")
-	.addEventListener("submit", function(e) {
+	.addEventListener("submit", function (e) {
 		const nombre = document.getElementById("nombre").value;
 		const dniCred = document.getElementById("dniCred").value;
 		const sede = document.getElementById("inputSedeElegida").value;
@@ -155,40 +180,35 @@ document.getElementById("turnero")
 			dom.exito();
 			mensajesErrores.innerHTML = "";
 			e.preventDefault();
-			/*
-						document.getElementById("turno-asig")
-							.addEventListener("click", function(e) {
-								const dom = new DOM();
-								dom.borrarPaciente(e.target, paciente);
-								e.preventDefault();
-								e.stopPropagation();
-							});
-			*/
 
-			$(document).on('click', '.botonBorrar', function() {
-				document.querySelectorAll(".botonBorrar").forEach(function(botones) {
-					botones.addEventListener("click", function(boton) {
+			
+			$(document).on('click', '.botonBorrar', function () {
+				document.querySelectorAll(".botonBorrar").forEach(function (botones) {
+					botones.addEventListener("click", function (boton) {
 						const id = boton.target.getAttribute("id");
-
-						dom.borrarPaciente(boton.target, paciente, id);
-
+						const divId = document.getElementById(id).parentElement.parentElement.getAttribute('id');
+						console.log(divId);
+						
+						dom.borrarPaciente(boton.target, paciente, divId);
+						
 						e.preventDefault();
 						e.stopPropagation();
+					
 					});
 				});
 			});
-
+		
 		} else {
 			let errores = "";
 			let errorEncontrado = false;
 			mensajesErrores.innerHTML = "";
 
 			if (!validacionNombre(nombre)) {
-				errores += "* El nombre ingresado no es válido por favor, ingrese un nombre válido, sin números ni símbolos. <br> <br>";
+				errores += "* El nombre ingresado no es válido, por favor ingrese un nombre válido. No debe contener números ni símbolos. <br> <br>";
 				errorEncontrado = true;
 			}
 			if (!validacionDNI(dniCred)) {
-				errores += "* El DNI ingresado no es válido, por favor, ingrese un DNI válido. <br> <br>";
+				errores += "* El DNI ingresado no es válido, por favor, ingrese un DNI válido. <br>";
 				errorEncontrado = true;
 			}
 			if (errorEncontrado) {
@@ -196,5 +216,37 @@ document.getElementById("turnero")
 			}
 			e.preventDefault();
 			e.stopPropagation();
+		} 
+	})	
+
+//Uso de API fake para mostrar un listado de datos
+
+/*function tablaMails(){*/
+
+	document.getElementById("mailsBtn")
+	.addEventListener("click", function () {
+
+	document.getElementById("mailsProfesionales").style.display = "block";
+
+let url = 'https://jsonplaceholder.typicode.com/users/';
+	fetch(url)
+		.then(function (response) {
+				return response.json();
+			})
+		.then(data => mostrarData(data))
+		.catch(error => console.log(error))
+
+		const mostrarData = (data) => {
+			console.log(data)
+			let body = ""
+			for (var i = 0; i < data.length; i++) {      
+			   body+=`<tr>
+			   <td>${data[i].id}</td>
+			   <td>${data[i].name}</td>
+			   <td>${data[i].email}</td>
+			   </tr>`
+			}
+			document.getElementById("data").innerHTML = body;
 		}
-	})
+		/*return data;*/
+	});
